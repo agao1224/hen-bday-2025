@@ -1,68 +1,42 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@font-face {
+  font-family: 'cm';
+  display: swap;
+  src: url('./styles/Cookiemonster-gv11.ttf') format('truetype');
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+@font-face {
+  font-family: 'sprinkle';
+  display: swap;
+  src: url('./styles/Sprinklescolors-njrJ.ttf') format('truetype');
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+@theme {
+  --font-cm: "cm", sans-serif;
+  --font-sprinkle: "sprinkle", sans-serif;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+@layer utilities {
+  .sprinkle {
+    font-family: "sprinkle", sans-serif;
+    letter-spacing: 0.1em;
   }
-  a:hover {
-    color: #747bff;
+
+  .bg-cat {
+    background-image: url('./assets/cat-bg.jpg');
+    background-repeat: repeat-y;
+    background-size: 100% auto; /* Fill width, auto height (original aspect) */
+    background-position: top center;
+    position: relative;
+    z-index: 0;
   }
-  button {
-    background-color: #f9f9f9;
+  
+  .bg-cat::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.4);
+    z-index: -1;
   }
 }
