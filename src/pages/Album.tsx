@@ -15,7 +15,6 @@ const Album = () => {
   const navigate = useNavigate();
   const { supabase } = useAuth();
 
-  // Initialize layout
   useEffect(() => {
     const initialLayout = memories.map((memory, index) => ({
       i: memory.id.toString(),
@@ -39,7 +38,7 @@ const Album = () => {
   };
 
   // Capture drag updates
-  const handleDragStop = (_layout: Layout[], oldItem: Layout, newItem: Layout) => {
+  const handleDragStop = (_layout: Layout[], _oldItem: Layout, newItem: Layout) => {
     setLayouts((prev) => ({
       lg: prev.lg.map((item) => (item.i === newItem.i ? newItem : item)),
     }));
@@ -64,7 +63,7 @@ const Album = () => {
 
     const { error } = await supabase.from("albums").insert([
       {
-        layout: layouts.lg, // saving layout with correct w, h, x, y
+        layout: layouts.lg,
         album_name,
         image_ids,
       },
