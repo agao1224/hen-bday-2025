@@ -5,81 +5,77 @@ import { IconContext } from 'react-icons/lib';
 
 import Home from './pages/Home';
 import Cart from './pages/Cart';
-import { CartProvider } from './hooks/CartContext';
+import Login from './pages/Login';
+import Event from './pages/Event';
+import SharedAlbum from './pages/SharedAlbum';
+import ProtectedRoute from './pages/ProtectedRoute';
+import { CartProvider, useCart } from './hooks/CartContext';
+import { AuthProvider } from './hooks/AuthContext';
+import { APIProvider } from './hooks/APIContext';
+import Album from './pages/Album';
 
-/*
-  Components:
-- Filters + tags on each "store"
--- Tag ideas: year, relationship (school, church, family, etc)
-- "Store" display component, each store is an event in her life
-- Checkout page listing pictures selected
-- "Delivery" page = a collage (or something) that displays said photos
-*/
+const AppContent = () => {
+  const { memories } = useCart();
 
-/*
-Headings / Emphasis
-#7B4B3A
-Warm brown
-Cute and soft but readable
-Subtle text
-#b18984
-Muted rose
-Harmonizes with the background
-Accent / Button
-#FFD1DC
-Baby pink
-Lighter tone for layered kawaii style
-Link color
-#e8bdc7
-Pink coral
-Friendly and visible on pink
-*/
+  return (
+    <div className="bg-cat bg-contain repeat-y px-4 sm:px-[25%] py-2">
+      <nav className="bg-transparent text-[#b18984]">
+        <ul className="flex relative">
+          <li>
+            <Link to="/">
+              <IconContext.Provider value={{ color: "#b18984" }}>
+                <FaHouse size={36} />
+              </IconContext.Provider>
+            </Link>
+          </li>
+          <li className="ml-auto relative">
+            <Link to="/cart" className="relative inline-block">
+              <IconContext.Provider value={{ color: "#b18984" }}>
+                <FaShoppingCart size={36} />
+              </IconContext.Provider>
+              {memories.length > 0 && (
+                <span className="absolute -bottom-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                  {memories.length}
+                </span>
+              )}
+            </Link>
+          </li>
+        </ul>
+      </nav>
 
-/*
-  TODO(andrew):
-- add memories to each store that you can checkout
-- searching (big stretch feature)
-- category icons to filter by (slight stretch)
-- * collect photos + come up w different categories (HIGH PRIORITY)
-- add song with checkout? (stretch)
-- * ask aleena to come up with better color to contrast against background
-*/
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+        <Route path="/gan-2025" element={<ProtectedRoute><Event tags={["gan", "2025"]} storeName="GAN 2025"/></ProtectedRoute>} />
+        <Route path="/retreat-2024" element={<ProtectedRoute><Event tags={["retreat", "2024"]} storeName="Retreat 2024"/></ProtectedRoute>} />
+        <Route path="/retreat-2025" element={<ProtectedRoute><Event tags={["retreat", "2025"]} storeName="Retreat 2025"/></ProtectedRoute>} />
+        <Route path="/san-2024" element={<ProtectedRoute><Event tags={["san", "2024"]} storeName="San 2024"/></ProtectedRoute>} />
+        <Route path="/sso-2025" element={<ProtectedRoute><Event tags={["sso", "2025"]} storeName="SSO 2025"/></ProtectedRoute>} />
+        <Route path="/album" element={<ProtectedRoute><Album /></ProtectedRoute>} />
+        <Route
+          path="/albums/:album_name"
+          element={
+              <SharedAlbum />
+          }
+        />
+      </Routes>
+    </div>
+  );
+};
 
 const App = () => {
   return (
     <BrowserRouter>
-      <CartProvider>
-        <div className="bg-cat bg-contain repeat-y px-4 sm:px-[25%] py-2">
-          <nav className="bg-transparent text-[#b18984]">
-            <ul className="flex">
-              <li>
-                <Link to="/">
-                  <IconContext.Provider value={{
-                    color: "#b18984"
-                  }}>
-                    <FaHouse size={36} />
-                  </IconContext.Provider>
-                </Link>
-              </li>
-              <li className="ml-auto">
-                <Link to="/cart">
-                  <IconContext.Provider value={{
-                    color: "#b18984"
-                  }}>
-                    <FaShoppingCart size={36} />
-                  </IconContext.Provider>
-                </Link>
-              </li>
-            </ul>
-          </nav>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/cart" element={<Cart />} />
-          </Routes>
-        </div>
-      </CartProvider>
+      <AuthProvider>
+        <APIProvider>
+          <CartProvider>
+            <AppContent />
+          </CartProvider>
+        </APIProvider>
+      </AuthProvider>
     </BrowserRouter>
-  )
-}
+  );
+};
 
 export default App;

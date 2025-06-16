@@ -26,7 +26,16 @@
   .bg-cat {
     background-image: url('./assets/cat-bg.jpg');
     background-repeat: repeat-y;
-    background-size: 100% auto; /* Fill width, auto height (original aspect) */
+    background-size: 100% auto;
+    background-position: top center;
+    position: relative;
+    z-index: 0;
+  }
+
+  .bg-heart {
+    background-image: url('./assets/heart-bg.jpg');
+    background-repeat: repeat-y;
+    background-size: 100% auto;
     background-position: top center;
     position: relative;
     z-index: 0;

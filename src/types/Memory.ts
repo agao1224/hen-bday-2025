@@ -1,5 +1,5 @@
 export type Memory = {
   id: number;
-  image: string;
+  image_url: string;
   tags: Array<string>;
 }
