@@ -60,6 +60,8 @@ const AppContent = () => {
           }
         />
       </Routes>
+
+      <div className="h-[20vh] sm:h-[30vh]" />
     </div>
   );
 };
