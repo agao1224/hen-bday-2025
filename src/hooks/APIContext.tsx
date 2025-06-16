@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useAuth } from "./AuthContext"; // assumes this is in the same `hooks` folder
 
