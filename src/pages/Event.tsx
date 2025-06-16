@@ -41,6 +41,19 @@ const Event = ({ storeName, tags }: EventProps) => {
     fetch();
   }, [tags, fetchByTags]);
 
+  const getCompressedPublicImageUrl = (signedUrl: string, quality: number = 25): string => {
+    try {
+      const url = new URL(signedUrl);
+      const filePath = url.pathname.split("/object/sign/pictures/")[1];
+      if (!filePath) return signedUrl;
+  
+      return `https://fhrktvvahthzvzgqcvhq.supabase.co/storage/v1/render/image/public/pictures/${filePath}?quality=${quality}`;
+    } catch (e) {
+      console.error("Failed to parse image URL:", signedUrl);
+      return signedUrl;
+    }
+  };
+
   const isInCart = (id: number) =>
     cartMemories.find((memory) => memory.id === id) !== undefined;
 
@@ -70,7 +83,11 @@ const Event = ({ storeName, tags }: EventProps) => {
       </div>
       {filteredMemories.map((memory) => (
         <div key={memory.id} className="flex flex-col items-center border p-4 rounded-xl bg-white shadow-md relative">
-          <img src={memory.image_url} alt={`memory ${memory.id}`} className="w-full max-w-xs rounded-lg" />
+          <img
+            src={getCompressedPublicImageUrl(memory.image_url)}
+            alt={`memory ${memory.id}`}
+            className="w-full max-w-xs rounded-lg"
+          />
           <button
             onClick={() => handleToggle(memory)}
             className={`text-white rounded-lg hover:brightness-110 active:scale-95 transition-all absolute bottom-6 right-6 ${
