@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { WidthProvider, Responsive } from "react-grid-layout";
+import type { Layout } from "react-grid-layout";
 import { useCart } from "../hooks/CartContext";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/AuthContext";
@@ -10,10 +11,11 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const Album = () => {
   const { memories, setMemories } = useCart();
-  const [layouts, setLayouts] = useState<{ [key: string]: any[] }>({ lg: [] });
+  const [layouts, setLayouts] = useState<{ lg: Layout[] }>({ lg: [] });
   const navigate = useNavigate();
   const { supabase } = useAuth();
 
+  // Initialize layout
   useEffect(() => {
     const initialLayout = memories.map((memory, index) => ({
       i: memory.id.toString(),
@@ -29,8 +31,18 @@ const Album = () => {
     alert("Drag pictures around, and press & hold the bottom right of pictures to resize them!");
   }, []);
 
-  const handleLayoutChange = (_currentLayout: any[], allLayouts: { [key: string]: any[] }) => {
-    setLayouts(allLayouts);
+  // Capture resizes
+  const handleResizeStop = (_layout: Layout[], _oldItem: Layout, newItem: Layout) => {
+    setLayouts((prev) => ({
+      lg: prev.lg.map((item) => (item.i === newItem.i ? newItem : item)),
+    }));
+  };
+
+  // Capture drag updates
+  const handleDragStop = (_layout: Layout[], oldItem: Layout, newItem: Layout) => {
+    setLayouts((prev) => ({
+      lg: prev.lg.map((item) => (item.i === newItem.i ? newItem : item)),
+    }));
   };
 
   const handleOrderAgain = () => {
@@ -42,9 +54,9 @@ const Album = () => {
   };
 
   const handleShare = async () => {
-    const album_name = prompt("Enter an album name (only letters and numbers, no spaces):");
+    const album_name = prompt("Enter an album name (alphanumeric only, no spaces or special characters):");
     if (!album_name || /[^a-zA-Z0-9]/.test(album_name)) {
-      alert("Invalid album name. Use letters and numbers only, no spaces!");
+      alert("Invalid album name. Use alphanumeric characters only.");
       return;
     }
 
@@ -52,7 +64,7 @@ const Album = () => {
 
     const { error } = await supabase.from("albums").insert([
       {
-        layout: layouts.lg,
+        layout: layouts.lg, // saving layout with correct w, h, x, y
         album_name,
         image_ids,
       },
@@ -80,7 +92,8 @@ const Album = () => {
         rowHeight={100}
         isResizable
         isDraggable
-        onLayoutChange={handleLayoutChange}
+        onResizeStop={handleResizeStop}
+        onDragStop={handleDragStop}
       >
         {memories.map((memory) => (
           <div
