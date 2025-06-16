@@ -10,29 +10,27 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const Album = () => {
   const { memories, setMemories } = useCart();
-  const [layouts, setLayouts] = useState<any[]>([]);
+  const [layouts, setLayouts] = useState<{ [key: string]: any[] }>({ lg: [] });
   const navigate = useNavigate();
   const { supabase } = useAuth();
 
   useEffect(() => {
-    const initialLayouts = memories.map((memory, index) => ({
+    const initialLayout = memories.map((memory, index) => ({
       i: memory.id.toString(),
       x: (index * 2) % 12,
-      y: Infinity,
+      y: Math.floor(index / 6),
       w: 2,
       h: 2,
     }));
-    setLayouts(initialLayouts);
+    setLayouts({ lg: initialLayout });
   }, [memories]);
 
   useEffect(() => {
     alert("Drag pictures around, and press & hold the bottom right of pictures to resize them!");
   }, []);
 
-  const handleResizeStop = (_layout: any, _oldItem: any, newItem: any) => {
-    setLayouts((prev) =>
-      prev.map((item) => (item.i === newItem.i ? newItem : item))
-    );
+  const handleLayoutChange = (_currentLayout: any[], allLayouts: { [key: string]: any[] }) => {
+    setLayouts(allLayouts);
   };
 
   const handleOrderAgain = () => {
@@ -44,9 +42,9 @@ const Album = () => {
   };
 
   const handleShare = async () => {
-    const album_name = prompt("Enter an album name (alphanumeric only, no spaces or special characters):");
+    const album_name = prompt("Enter an album name (only letters and numbers, no spaces):");
     if (!album_name || /[^a-zA-Z0-9]/.test(album_name)) {
-      alert("Invalid album name. Use alphanumeric characters only.");
+      alert("Invalid album name. Use letters and numbers only, no spaces!");
       return;
     }
 
@@ -54,7 +52,7 @@ const Album = () => {
 
     const { error } = await supabase.from("albums").insert([
       {
-        layout: layouts,
+        layout: layouts.lg,
         album_name,
         image_ids,
       },
@@ -73,15 +71,16 @@ const Album = () => {
       <p className="sprinkle text-5xl sm:text-7xl text-[#7B4B3A] mb-6 text-center">
         My memories
       </p>
+
       <ResponsiveGridLayout
         className="layout"
-        layouts={{ lg: layouts }}
+        layouts={layouts}
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
         cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
         rowHeight={100}
-        onResizeStop={handleResizeStop}
         isResizable
         isDraggable
+        onLayoutChange={handleLayoutChange}
       >
         {memories.map((memory) => (
           <div
